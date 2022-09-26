@@ -9,35 +9,44 @@ const Shop = () => {
     const [cart, setCart] = useState([]);
 
     useEffect( () =>{
-        console.log('load product')
+       
         fetch('products.json')
         .then(res=> res.json())
         .then(data => setProducts(data))
     }, []);
 
+  
     useEffect(() => {
-        console.log('local storage')
         const storedCart =getStoredCart();
-       const saveCart =[];
+        const saveCart =[];
         for(const id in storedCart){
-       const addedProduct =products.find(product => product.id ===id)
-       if(addedProduct){
-            const quantity = storedCart[id];
-            addedProduct.quantity= quantity;
-              console.log(addedProduct);
-              saveCart.push(addedProduct);
-       }
+           const addedProduct =products.find(product => product.id === id)
+           if(addedProduct){
+            const quantity =storedCart[id];
+            addedProduct.quantity =quantity;
+                  saveCart.push(addedProduct)          
+           }
         }
-        setCart(saveCart);
-        // console.log('finished')
-    },[products])
 
+       setCart(setCart);
+
+    },[products])
 
 
     const handleAddToCart = (product) =>{
         console.log(product);
-        // do not do this: cart.push(product);
-        const newCart = [...cart, product];
+        let newCart = [];
+        const exists =cart.find(produ =>  produ.id !== product.id)
+        if(!exists){
+            product.quantity = 1;
+            newCart = [...cart, product];
+        }
+        else{
+            const rest =cart.filter(produ => produ.id !== product.id);
+            exists.quantity = exists.quantity +1;
+            newCart = [...rest, exists];
+        }
+       
         setCart(newCart);
         addToDb(product.id);
     }
